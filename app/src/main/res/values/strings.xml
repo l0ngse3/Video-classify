@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">DoAnVideoClassification</string>
+    <string name="title_activity_classifier">ClassifierActivity</string>
+</resources>
