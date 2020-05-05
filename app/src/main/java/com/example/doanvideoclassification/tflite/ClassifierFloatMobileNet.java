@@ -26,12 +26,12 @@ public class ClassifierFloatMobileNet extends Classifier{
 
     @Override
     protected String getModelPath() {
-        return null;
+        return "mobilenet_model_BN1_train2_ucf.tflite";
     }
 
     @Override
     protected String getLabelPath() {
-        return null;
+        return "labels.txt";
     }
 
     @Override

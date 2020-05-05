@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -92,6 +93,8 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this, "Preview", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, ClassifyActivity.class);
+                startActivity(intent);
             }
         });
         
@@ -107,10 +110,20 @@ public class MainActivity extends AppCompatActivity  {
                     @Override
                     public void run() {
                         getLastestImage();
+                        Intent intent = new Intent(MainActivity.this, ClassifyActivity.class);
+                        startActivity(intent);
                     }
                 };
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.postDelayed(runnable, 1000);
+            }
+        });
+
+        imgRealtime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ClassifyActivityRT.class);
+                startActivity(intent);
             }
         });
     }
@@ -158,6 +171,7 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onResume() {
         super.onResume();
+        getLastestImage();
         camera.startBackgroundThread();
         if(autoFitTextureView.isAvailable()){
             camera.setupCamera(autoFitTextureView.getWidth(), autoFitTextureView.getHeight());

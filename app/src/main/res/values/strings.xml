@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">DoAnVideoClassification</string>
+    <string name="app_name">Video Classify</string>
     <string name="title_activity_classifier">ClassifierActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

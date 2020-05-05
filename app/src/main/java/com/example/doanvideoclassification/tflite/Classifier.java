@@ -9,7 +9,6 @@ import android.os.Trace;
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.gpu.GpuDelegate;
-import org.tensorflow.lite.nnapi.NnApiDelegate;
 import org.tensorflow.lite.support.common.FileUtil;
 import org.tensorflow.lite.support.common.TensorOperator;
 import org.tensorflow.lite.support.common.TensorProcessor;
@@ -33,13 +32,12 @@ public abstract class Classifier {
 
     /** The model type used for classification. */
     public enum Model {
-        FLOAT,
+        FLOAT
     }
 
     /** The runtime device type used for executing classification. */
     public enum Device {
-        CPU,
-        NNAPI,
+        CPU
     }
 
     /** Number of results to show in the UI. */
@@ -80,7 +78,7 @@ public abstract class Classifier {
      * Creates a classifier with the provided configuration.
      *
      * @param activity The current Activity.
-     * @param model The model to use for classification.
+     * //@param model The model to use for classification.
      * @param device The device to use for classification.
      * @param numThreads The number of threads to use for classification.
      * @return A classifier with the desired configuration.

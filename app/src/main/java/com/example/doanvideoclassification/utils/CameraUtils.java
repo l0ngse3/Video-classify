@@ -186,7 +186,7 @@ public class CameraUtils {
                             Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
                             if(afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED ||
                                     afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
-                                Toast.makeText(activity.getApplicationContext(), "AF Locked!", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(activity.getApplicationContext(), "AF Locked!", Toast.LENGTH_SHORT).show();
                                 startStillCaptureRequest();
                             }
                             break;
@@ -213,7 +213,7 @@ public class CameraUtils {
                             Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
                             if(afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED ||
                                     afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
-                                Toast.makeText(activity.getApplicationContext(), "AF Locked!", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(activity.getApplicationContext(), "AF Locked!", Toast.LENGTH_SHORT).show();
                                 startStillCaptureRequest();
                             }
                             break;

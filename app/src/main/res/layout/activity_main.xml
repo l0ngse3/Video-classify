@@ -26,7 +26,6 @@
         android:paddingBottom="?attr/actionBarSize"/>
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="180dp"
@@ -43,7 +42,6 @@
             android:maxWidth="80dp"
             android:background="@null"
             android:layout_gravity="center"
-            android:layout_weight="1"
             android:src="@mipmap/ic_launcher_round"/>
 
         <ImageButton
@@ -51,12 +49,13 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginBottom="30dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
             android:maxHeight="80dp"
             android:maxWidth="80dp"
-            android:layout_weight="1"
             android:background="@null"
             android:layout_gravity="center"
-            android:src="@mipmap/ic_launcher_round"/>
+            android:src="@drawable/ic_lens_80dp"/>
 
         <ImageButton
             android:id="@+id/imgRealtime"
@@ -67,7 +66,6 @@
             android:maxWidth="80dp"
             android:background="@null"
             android:layout_gravity="center"
-            android:layout_weight="1"
-            android:src="@mipmap/ic_launcher_round"/>
+            android:src="@drawable/ic_camera_60dp"/>
     </LinearLayout>
 </RelativeLayout>
