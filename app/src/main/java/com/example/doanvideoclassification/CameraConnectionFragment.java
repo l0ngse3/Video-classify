@@ -402,14 +402,16 @@ public class CameraConnectionFragment extends Fragment {
     }
 
     /** Stops the background thread and its {@link Handler}. */
-    private void stopBackgroundThread() {
-        backgroundThread.quitSafely();
-        try {
-            backgroundThread.join();
-            backgroundThread = null;
-            backgroundHandler = null;
-        } catch (final InterruptedException e) {
+    protected void stopBackgroundThread() {
+        if(backgroundThread != null){
+            backgroundThread.quitSafely();
+            try {
+                backgroundThread.join();
+                backgroundThread = null;
+                backgroundHandler = null;
+            } catch (final InterruptedException e) {
 //            LOGGER.e(e, "Exception!");
+            }
         }
     }
 

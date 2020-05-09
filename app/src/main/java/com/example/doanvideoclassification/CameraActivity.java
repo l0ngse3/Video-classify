@@ -62,8 +62,8 @@ public abstract class CameraActivity extends AppCompatActivity implements ImageR
     private byte[][] yuvBytes = new byte[3][];
     private int[] rgbBytes = null;
     private int yRowStride;
-    private Runnable postInferenceCallback;
-    private Runnable imageConverter;
+    protected Runnable postInferenceCallback;
+    protected Runnable imageConverter;
     private LinearLayout bottomSheetLayout;
     private LinearLayout gestureLayout;
     private BottomSheetBehavior<LinearLayout> sheetBehavior;
@@ -317,6 +317,13 @@ public abstract class CameraActivity extends AppCompatActivity implements ImageR
     }
 
     @Override
+    public void onBackPressed() {
+        stopBackgroundThread();
+
+        super.onBackPressed();
+    }
+
+    @Override
     public synchronized void onStart() {
 //        LOGGER.d("onStart " + this);
         super.onStart();
@@ -339,14 +346,16 @@ public abstract class CameraActivity extends AppCompatActivity implements ImageR
         super.onPause();
     }
 
-    private void stopBackgroundThread(){
-        handlerThread.quitSafely();
-        try {
-            handlerThread.join();
-            handlerThread = null;
-            handler = null;
-        } catch (final InterruptedException e) {
+    protected void stopBackgroundThread(){
+        if(handlerThread != null){
+            handlerThread.quitSafely();
+            try {
+                handlerThread.join();
+                handlerThread = null;
+                handler = null;
+            } catch (final InterruptedException e) {
 //            LOGGER.e(e, "Exception!");
+            }
         }
     }
 

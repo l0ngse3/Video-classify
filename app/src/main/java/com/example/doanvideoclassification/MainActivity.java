@@ -122,6 +122,8 @@ public class MainActivity extends AppCompatActivity  {
         imgRealtime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                camera.closeCamera();
+                camera.stopBackgroundThread();
                 Intent intent = new Intent(MainActivity.this, ClassifyActivityRT.class);
                 startActivity(intent);
             }

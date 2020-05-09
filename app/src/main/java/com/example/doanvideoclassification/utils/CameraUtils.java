@@ -445,13 +445,15 @@ public class CameraUtils {
     }
 
     public void stopBackgroundThread() {
-        mBackgroundHandlerThread.quitSafely();
-        try {
-            mBackgroundHandlerThread.join();
-            mBackgroundHandlerThread = null;
-            mBackgroundHandler = null;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(mBackgroundHandlerThread != null){
+            mBackgroundHandlerThread.quitSafely();
+            try {
+                mBackgroundHandlerThread.join();
+                mBackgroundHandlerThread = null;
+                mBackgroundHandler = null;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

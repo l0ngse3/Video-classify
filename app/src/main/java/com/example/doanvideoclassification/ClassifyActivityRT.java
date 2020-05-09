@@ -97,6 +97,14 @@ public class ClassifyActivityRT extends CameraActivity implements ImageReader.On
     }
 
     @Override
+    public void onBackPressed() {
+        postInferenceCallback = null;
+        imageConverter = null;
+        stopBackgroundThread();
+        super.onBackPressed();
+    }
+
+    @Override
     protected void onInferenceConfigurationChanged() {
         if (rgbFrameBitmap == null) {
             // Defer creation until we're getting camera frames.
