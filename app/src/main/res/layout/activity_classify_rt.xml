@@ -22,8 +22,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#00000000"
-        android:orientation="vertical">
+        android:background="#000">
 
 
         <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -32,6 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/black"
+            android:layout_marginTop="?attr/actionBarSize"
             tools:context="org.tensorflow.lite.examples.classification.CameraActivity" />
 
 

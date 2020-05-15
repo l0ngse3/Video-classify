@@ -1,20 +1,24 @@
 package com.example.doanvideoclassification;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Chronometer;
@@ -27,16 +31,19 @@ import com.example.doanvideoclassification.customview.AutoFitTextureView;
 
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_PERMISSION_RESULT = 0;
 
+    private static final int REQUEST_CODE_PICK_IMAGE_VIDEO = 111;
+
+    private static String filePicked = "";
 
     ImageView imgCapture, imgPreview, imgRealtime;
     AutoFitTextureView autoFitTextureView;
     CameraUtils camera;
     Chronometer mChronometer;
-    TextureView.SurfaceTextureListener textureListener ;
+    TextureView.SurfaceTextureListener textureListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,10 +88,9 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void eventProcessing() {
-        if(cameraGranted() && externalStorageGranted()){
+        if (cameraGranted() && externalStorageGranted()) {
             getLastestImage();
-        }
-        else{
+        } else {
             grantPermission();
         }
 
@@ -92,17 +98,17 @@ public class MainActivity extends AppCompatActivity  {
         imgPreview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "Preview", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, ClassifyActivity.class);
-                startActivity(intent);
+                Intent pickIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                pickIntent.setType("image/* video/*");
+                startActivityForResult(pickIntent, REQUEST_CODE_PICK_IMAGE_VIDEO);
             }
         });
-        
+
         imgCapture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this, "Capture", Toast.LENGTH_SHORT).show();
-                if(!(camera.isIsTimelapse() || camera.isIsRecording())) {
+                if (!(camera.isIsTimelapse() || camera.isIsRecording())) {
                     camera.checkWriteStoragePermission();
                 }
                 camera.lockFocus();
@@ -111,6 +117,7 @@ public class MainActivity extends AppCompatActivity  {
                     public void run() {
                         getLastestImage();
                         Intent intent = new Intent(MainActivity.this, ClassifyActivity.class);
+                        intent.putExtra("data", getLastestImage());
                         startActivity(intent);
                     }
                 };
@@ -147,17 +154,17 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == REQUEST_PERMISSION_RESULT && grantResults.length == 3){
-            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
+        if (requestCode == REQUEST_PERMISSION_RESULT && grantResults.length == 3) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "The application will not run without camera services!", Toast.LENGTH_SHORT).show();
             }
-            if(grantResults[1] != PackageManager.PERMISSION_GRANTED){
+            if (grantResults[1] != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "The application will not run without read storage services!", Toast.LENGTH_SHORT).show();
             }
-            if(grantResults[2] != PackageManager.PERMISSION_GRANTED){
+            if (grantResults[2] != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "The application will not run without write storage services!", Toast.LENGTH_SHORT).show();
             }
-            if(grantResults[0] == grantResults[1] && grantResults[1]==grantResults[2] && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            if (grantResults[0] == grantResults[1] && grantResults[1] == grantResults[2] && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLastestImage();
             }
         }
@@ -168,6 +175,7 @@ public class MainActivity extends AppCompatActivity  {
         camera.closeCamera();
         camera.stopBackgroundThread();
         super.onPause();
+        Log.d("MainActivity", "onPause ");
     }
 
     @Override
@@ -175,16 +183,17 @@ public class MainActivity extends AppCompatActivity  {
         super.onResume();
         getLastestImage();
         camera.startBackgroundThread();
-        if(autoFitTextureView.isAvailable()){
+        if (autoFitTextureView.isAvailable()) {
             camera.setupCamera(autoFitTextureView.getWidth(), autoFitTextureView.getHeight());
             camera.connectCamera();
-        }
-        else {
+        } else {
             autoFitTextureView.setSurfaceTextureListener(textureListener);
         }
+        Log.d("MainActivity", "onResume ");
     }
 
-    public void getLastestImage(){
+    public String getLastestImage() {
+        String filePath = null;
         String[] projection = new String[]{
                 MediaStore.Images.ImageColumns._ID,
                 MediaStore.Images.ImageColumns.DATA,
@@ -200,21 +209,23 @@ public class MainActivity extends AppCompatActivity  {
         if (cursor.moveToFirst()) {
             String imageLocation = cursor.getString(1);
             File imageFile = new File(imageLocation);
+            filePath = imageLocation;
             if (imageFile.exists()) {   // TODO: is there a better way to do this?
                 Bitmap bm = BitmapFactory.decodeFile(imageLocation);
                 ImageUtils.loadCircleImageInto(this, bm, imgPreview);
             }
         }
+        return filePath;
     }
 
-    private boolean cameraGranted(){
+    private boolean cameraGranted() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
         }
         return true;
     }
 
-    private boolean externalStorageGranted(){
+    private boolean externalStorageGranted() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         }
@@ -222,7 +233,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void grantPermission() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!cameraGranted() || !externalStorageGranted()) {
                 requestPermissions(new String[]{Manifest.permission.CAMERA,
                         Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -236,4 +247,68 @@ public class MainActivity extends AppCompatActivity  {
         return mChronometer;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQUEST_CODE_PICK_IMAGE_VIDEO:
+                if (resultCode == RESULT_OK) {
+                    final Uri selectedMediaUri = data.getData();
+                    Log.d("Request video image", "onActivityResult: " + selectedMediaUri.toString());
+                    filePicked = getRealPathFromURI(this, selectedMediaUri);
+
+                    if (selectedMediaUri.toString().contains("jpg")) {
+                        //handle image
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(MainActivity.this, ClassifyActivity.class);
+                                intent.putExtra("data", getRealPathFromURI(MainActivity.this, selectedMediaUri));
+                                startActivity(intent);
+                                Log.d("Selected Image","Image: " + selectedMediaUri.toString());
+                            }
+                        };
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.postDelayed(runnable, 1000);
+
+                    } else if (selectedMediaUri.toString().contains("mp4")) {
+                        //handle video
+
+                        Log.d("Selected video","Video: " + selectedMediaUri.toString());
+                    }
+//                    Uri selectedImage = data.getData();
+//                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+//
+//                    Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+//                    cursor.moveToFirst();
+//
+//                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//                    String filePath = cursor.getString(columnIndex);
+//                    cursor.close();
+//
+//
+//                    Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
+                }
+        }
+
+    }
+
+    private String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } catch (Exception e) {
+            Log.e("Get Path", "getRealPathFromURI Exception : " + e.toString());
+            return "";
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
 }

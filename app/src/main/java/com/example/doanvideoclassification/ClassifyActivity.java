@@ -2,9 +2,12 @@ package com.example.doanvideoclassification;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.MediaStore;
@@ -20,6 +23,8 @@ import com.example.doanvideoclassification.tflite.Classifier.Recognition;
 
 import com.example.doanvideoclassification.tflite.Classifier;
 import com.example.doanvideoclassification.utils.ImageUtils;
+
+import org.tensorflow.lite.support.common.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +53,7 @@ public class ClassifyActivity extends AppCompatActivity {
         txtResult = findViewById(R.id.txtResult);
         btnBack = findViewById(R.id.btnBack);
 
-        getLastestImage();
+        getImagePath();
         classfyImage();
 
         eventProcessing();
@@ -80,7 +85,7 @@ public class ClassifyActivity extends AppCompatActivity {
                                         if (recognition.getConfidence() != null)
                                             value = recognition.getConfidence();
 
-                                        if (value > 0.75) {
+                                        if (value > 0.80) {
                                             txtResult.setText(result);
                                         } else {
                                             txtResult.setText("Can not classify");
@@ -99,34 +104,27 @@ public class ClassifyActivity extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ClassifyActivity.this.finish();
+                onBackPressed();
             }
         });
-
-
     }
 
-    public void getLastestImage(){
-        String[] projection = new String[]{
-                MediaStore.Images.ImageColumns._ID,
-                MediaStore.Images.ImageColumns.DATA,
-                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, //the album it in
-                MediaStore.Images.ImageColumns.DATE_TAKEN,
-                MediaStore.Images.ImageColumns.MIME_TYPE
-        };
-        final Cursor cursor = this.getContentResolver()
-                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
-                        null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(ClassifyActivity.this, MainActivity.class);
+        startActivity(intent);
+        ClassifyActivity.this.finish();
+    }
 
-// Put it in the image view
-        if (cursor.moveToFirst()) {
-            String imageLocation = cursor.getString(1);
-            File imageFile = new File(imageLocation);
-            if (imageFile.exists()) {   // TODO: is there a better way to do this?
-                Bitmap bm = BitmapFactory.decodeFile(imageLocation);
-                rgbBitmap = bm;
-                ImageUtils.loadRectangleImageInto(this, bm, imgView);
-            }
+    public void getImagePath(){
+        String imageLocation = getIntent().getStringExtra("data");
+        Log.d("image ", "getLastestImage: "+ imageLocation);
+        File imageFile = new File(imageLocation);
+        if (imageFile.exists()) {
+            Bitmap bm = BitmapFactory.decodeFile(imageLocation);
+            rgbBitmap = bm;
+            ImageUtils.loadRectangleImageInto(this, bm, imgView);
         }
     }
 

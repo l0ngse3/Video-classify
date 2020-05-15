@@ -347,6 +347,7 @@ public abstract class CameraActivity extends AppCompatActivity implements ImageR
     }
 
     protected void stopBackgroundThread(){
+        postInferenceCallback = null;
         if(handlerThread != null){
             handlerThread.quitSafely();
             try {
@@ -531,26 +532,13 @@ public abstract class CameraActivity extends AppCompatActivity implements ImageR
         if (results != null && results.size() >= 3) {
             Recognition recognition = results.get(0);
             if (recognition != null) {
-                if (recognition.getTitle() != null) recognitionTextView.setText(recognition.getTitle());
-                if (recognition.getConfidence() != null)
-                    recognitionValueTextView.setText(
-                            String.format("%.2f", (100 * recognition.getConfidence())) + "%");
+                if (recognition.getTitle() != null && recognition.getConfidence() > 0.8)
+                    recognitionTextView.setText(recognition.getTitle());
+                else
+                    recognitionTextView.setText("Can not classify");
             }
-
-            Recognition recognition1 = results.get(1);
-            if (recognition1 != null) {
-                if (recognition1.getTitle() != null) recognition1TextView.setText(recognition1.getTitle());
-                if (recognition1.getConfidence() != null)
-                    recognition1ValueTextView.setText(
-                            String.format("%.2f", (100 * recognition1.getConfidence())) + "%");
-            }
-
-            Recognition recognition2 = results.get(2);
-            if (recognition2 != null) {
-                if (recognition2.getTitle() != null) recognition2TextView.setText(recognition2.getTitle());
-                if (recognition2.getConfidence() != null)
-                    recognition2ValueTextView.setText(
-                            String.format("%.2f", (100 * recognition2.getConfidence())) + "%");
+            else{
+                recognitionTextView.setText("Can not classify");
             }
         }
     }

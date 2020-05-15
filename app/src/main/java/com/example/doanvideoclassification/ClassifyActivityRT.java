@@ -102,6 +102,7 @@ public class ClassifyActivityRT extends CameraActivity implements ImageReader.On
         imageConverter = null;
         stopBackgroundThread();
         super.onBackPressed();
+        finish();
     }
 
     @Override
