@@ -121,10 +121,11 @@ public class ClassifyActivity extends AppCompatActivity {
         String imageLocation = getIntent().getStringExtra("data");
         Log.d("image ", "getLastestImage: "+ imageLocation);
         File imageFile = new File(imageLocation);
+        int rotation = Integer.parseInt(getIntent().getStringExtra("rotation"));
         if (imageFile.exists()) {
             Bitmap bm = BitmapFactory.decodeFile(imageLocation);
             rgbBitmap = bm;
-            ImageUtils.loadRectangleImageInto(this, bm, imgView);
+            ImageUtils.loadRectangleImageInto(this, bm, imgView, rotation);
         }
     }
 

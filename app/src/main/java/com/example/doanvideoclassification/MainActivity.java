@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                         getLastestImage();
                         Intent intent = new Intent(MainActivity.this, ClassifyActivity.class);
                         intent.putExtra("data", getLastestImage());
+                        intent.putExtra("rotation", "90");
                         startActivity(intent);
                     }
                 };
@@ -264,7 +265,8 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 Intent intent = new Intent(MainActivity.this, ClassifyActivity.class);
-                                intent.putExtra("data", getRealPathFromURI(MainActivity.this, selectedMediaUri));
+                                intent.putExtra("data", filePicked);
+                                intent.putExtra("rotation", "0");
                                 startActivity(intent);
                                 Log.d("Selected Image","Image: " + selectedMediaUri.toString());
                             }
@@ -274,7 +276,17 @@ public class MainActivity extends AppCompatActivity {
 
                     } else if (selectedMediaUri.toString().contains("mp4")) {
                         //handle video
-
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(MainActivity.this, VideoClassifyActivity.class);
+                                intent.putExtra("data", filePicked);
+                                startActivity(intent);
+                                Log.d("Selected Image","Image: " + selectedMediaUri.toString());
+                            }
+                        };
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.postDelayed(runnable, 1000);
                         Log.d("Selected video","Video: " + selectedMediaUri.toString());
                     }
 //                    Uri selectedImage = data.getData();

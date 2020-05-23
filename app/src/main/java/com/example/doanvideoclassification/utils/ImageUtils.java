@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 public class ImageUtils {
 
 
-    public static void loadRectangleImageInto(Context context, Bitmap bm, ImageView view)
+    public static void loadRectangleImageInto(Context context, Bitmap bm, ImageView view, int rotation)
     {
         Glide.with(context).load(bm)
 //                .apply(new RequestOptions().circleCrop())
@@ -24,7 +24,7 @@ public class ImageUtils {
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .into(view);
-        view.setRotation(90);
+        view.setRotation(rotation);
     }
 
     public static void loadCircleImageInto(Context context, Bitmap bitmap, ImageView view)
